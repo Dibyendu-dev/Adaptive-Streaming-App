@@ -1,4 +1,36 @@
+'use client'
+
+import axios from "axios";
+import { ChangeEvent } from "react";
+
 export default function VideoUpload() {
+
+    const handleFileUpload = async(e: ChangeEvent<HTMLInputElement>)=> {
+       const file = e.target.files?.[0];
+        if(!file) {
+            console.error("No file selected");
+            return;
+        }
+        // console.log(file);
+        try {
+           const formData = new FormData();
+            formData.append("video", file);
+            const response = await axios.post(
+                'http://localhost:3000/api/v1/videos/upload',
+                formData,
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                }
+
+            );
+
+            console.log(response.data);
+        } catch (error) {
+           console.log("Something went wrong", error);
+        }
+    }
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center py-8 px-4">
       <div className="max-w-md w-full bg-white shadow-lg rounded-lg p-6">
@@ -6,7 +38,8 @@ export default function VideoUpload() {
 
         <input
           type="file"
-          className="block w-full text-sm text-gray-700 rounded-lg border border-gray-300 p-2 mt-2 cursor-pointer bg-gray-500 mb-4"
+          onChange={handleFileUpload}
+          className="block w-full text-sm text-gray-700 rounded-lg border border-gray-300 p-2 mt-2 cursor-pointer bg-gray-200 mb-4"
         />
       </div>
     </div>
