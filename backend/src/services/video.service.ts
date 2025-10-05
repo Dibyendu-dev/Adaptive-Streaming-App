@@ -28,6 +28,7 @@ export const processVideoForHLS = (
   let countProcessing = 0;
 
   resolutions.forEach((resolution) => {
+    console.log(`Processing video for resolution: ${resolution.width}x${resolution.height}`);
     const variantOutput = `${outputPath}/${resolution.height}p`;
     const varientPlaylist = `${variantOutput}/playlist.m3u8`;
 
