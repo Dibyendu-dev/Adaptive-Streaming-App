@@ -1,5 +1,6 @@
 import fs from "fs";
 import ffmpeg from "fluent-ffmpeg";
+import { createMovie, updateMovieStatus } from "../repositories/movie.repository";
 
 interface Resolution {
   width: number;
@@ -19,6 +20,9 @@ export const processVideoForHLS = (
   outputPath: string, //The path where the processed HLS files will be saved
   callback: (error: Error | null, masterPlaylist?: string) => void //A callback function that is called when the processing is complete.The callback receives an error object if an error occurred, and the master playlist string if the processing was successful.
 ): void => {
+
+  createMovie(outputPath);
+
   fs.mkdirSync(outputPath, { recursive: true });
 
   const masterPlaylist = `${outputPath}/master.m3u8`;
@@ -64,6 +68,8 @@ export const processVideoForHLS = (
             `#EXTM3U\n${masterContent.join("\n")}`
           );
           // place where video processing ends
+
+           updateMovieStatus(outputPath, 'COMPLETED');
 
           callback(null, masterPlaylist); // Call the callback with the master playlist path
         }
