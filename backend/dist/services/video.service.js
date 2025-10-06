@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.processVideoForHLS = void 0;
 const fs_1 = __importDefault(require("fs"));
 const fluent_ffmpeg_1 = __importDefault(require("fluent-ffmpeg"));
+const movie_repository_1 = require("../repositories/movie.repository");
 const resolutions = [
     { width: 1920, height: 1080, bitRate: 2000 }, // 1080p
     { width: 1280, height: 720, bitRate: 1000 }, // 720p
@@ -16,6 +17,7 @@ const processVideoForHLS = (inputPath, //The path to the input video file.
 outputPath, //The path where the processed HLS files will be saved
 callback //A callback function that is called when the processing is complete.The callback receives an error object if an error occurred, and the master playlist string if the processing was successful.
 ) => {
+    (0, movie_repository_1.createMovie)(outputPath);
     fs_1.default.mkdirSync(outputPath, { recursive: true });
     const masterPlaylist = `${outputPath}/master.m3u8`;
     const masterContent = [];
@@ -46,6 +48,7 @@ callback //A callback function that is called when the processing is complete.Th
                 // When the processing ends for all resolutions, create the master playlist
                 fs_1.default.writeFileSync(masterPlaylist, `#EXTM3U\n${masterContent.join("\n")}`);
                 // place where video processing ends
+                (0, movie_repository_1.updateMovieStatus)(outputPath, 'COMPLETED');
                 callback(null, masterPlaylist); // Call the callback with the master playlist path
             }
         })
